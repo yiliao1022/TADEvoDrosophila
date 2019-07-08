@@ -1,0 +1,5 @@
+
+### Download the dm6 genome and index
+
+bwa index -a bwtsw dmel.chr.fasta 
+
