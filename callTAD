@@ -1,5 +1,49 @@
 
-### Download the dm6 genome and index
+###Step1:  Download the dm6 genome and index
 
 bwa index -a bwtsw dmel.chr.fasta 
 
+###Step2:  Download Hi-C data from NCBI SRA
+
+Kc167: SRX5014527 SRX5014528 
+BG3: SRX5014529 SRX5014530
+num=$SGE_TASK_ID ### num in 1-4
+ID=$((num+26))
+/data/users/liaoy12/Softwares/sratoolkit.2.9.2-centos_linux64/bin/fastq-dump.2.9.2 --split-files SRX50145${ID}
+
+###Step3:  Mapping the Hi-C reads to dm6 genome
+$NSLOTS  = 120-128
+module load bwa/0.7.17-5g
+module load samtools/1.9
+
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014527_1.fastq | samtools view -Shb - > mapped_files/SRX5014527_1.sam
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014527_2.fastq | samtools view -Shb - > mapped_files/SRX5014527_2.sam 
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014528_1.fastq | samtools view -Shb - > mapped_files/SRX5014528_1.sam  
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014528_2.fastq | samtools view -Shb - > mapped_files/SRX5014528_2.sam
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014529_1.fastq | samtools view -Shb - > mapped_files/SRX5014529_1.sam  
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014529_2.fastq | samtools view -Shb - > mapped_files/SRX5014529_2.sam
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014530_1.fastq | samtools view -Shb - > mapped_files/SRX5014530_1.sam  
+bwa mem -t $NSLOTS -A1 -B4 -E50 -L0 /data/users/liaoy12/liaoy12/TAD/genomes/dmel.chr.fasta data/SRX5014530_2.fastq | samtools view -Shb - > mapped_files/SRX5014530_2.sam
+
+###Step4: Generating DPNII restriction site bed file for dm6 genome
+module load python/2.7.15
+/data/users/liaoy12/liaoy12/Pseudoobscura/HiC/bin/HiC-Pro/bin/utils/digest_genome.py -r ^GATC -o dm6_dpnii.bed dmel.chr.fasta 
+
+###Step5: Build Matrices DPNII for TADs
+  ## 10kb
+hicBuildMatrix --samFiles mapped_files/SRX5014527_1.sam mapped_files/SRX5014527_2.sam --restrictionSequence GATC --binSize 10000 --threads $NSLOTS --outBam SRX5014527_hic_10kb.bam -o hiCmatrix/SRX5014527_hic_matrix_10kb.npz --QCfolder hiCmatrix/SRX5014527_hic_matrix_10kb_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014528_1.sam mapped_files/SRX5014528_2.sam --restrictionSequence GATC --binSize 10000 --threads $NSLOTS --outBam SRX5014528_hic_10kb.bam -o hiCmatrix/SRX5014528_hic_matrix_10kb.npz --QCfolder hiCmatrix/SRX5014528_hic_matrix_10kb_hicQC 
+hicBuildMatrix --samFiles mapped_files/SRX5014529_1.sam mapped_files/SRX5014529_2.sam --restrictionSequence GATC --binSize 10000 --threads $NSLOTS --outBam SRX5014529_hic_10kb.bam -o hiCmatrix/SRX5014529_hic_matrix_10kb.npz --QCfolder hiCmatrix/SRX5014529_hic_matrix_10kb_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014530_1.sam mapped_files/SRX5014530_2.sam --restrictionSequence GATC --binSize 10000 --threads $NSLOTS --outBam SRX5014530_hic_10kb.bam -o hiCmatrix/SRX5014530_hic_matrix_10kb.npz --QCfolder hiCmatrix/SRX5014530_hic_matrix_10kb_hicQC
+  ## 150bp
+hicBuildMatrix --samFiles mapped_files/SRX5014527_1.sam mapped_files/SRX5014527_2.sam --restrictionCutFile /data/users/liaoy12/liaoy12/TAD/genomes/dm6_dpnii.bed --minDistance 150 --threads $NSLOTS --outBam SRX5014527_hic_dpnII.bam -o hiCmatrix/SRX5014527_hic_matrix_dpnII.npz --QCfolder hiCmatrix/SRX5014527_hic_matrix_dpnII_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014528_1.sam mapped_files/SRX5014528_2.sam --restrictionCutFile /data/users/liaoy12/liaoy12/TAD/genomes/dm6_dpnii.bed --minDistance 150 --threads $NSLOTS --outBam SRX5014528_hic_dpnII.bam -o hiCmatrix/SRX5014528_hic_matrix_dpnII.npz --QCfolder hiCmatrix/SRX5014528_hic_matrix_dpnII_hicQC 
+hicBuildMatrix --samFiles mapped_files/SRX5014529_1.sam mapped_files/SRX5014529_2.sam --restrictionCutFile /data/users/liaoy12/liaoy12/TAD/genomes/dm6_dpnii.bed --minDistance 150 --threads $NSLOTS --outBam SRX5014529_hic_dpnII.bam -o hiCmatrix/SRX5014529_hic_matrix_dpnII.npz --QCfolder hiCmatrix/SRX5014529_hic_matrix_dpnII_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014530_1.sam mapped_files/SRX5014530_2.sam --restrictionCutFile /data/users/liaoy12/liaoy12/TAD/genomes/dm6_dpnii.bed --minDistance 150 --threads $NSLOTS --outBam SRX5014530_hic_dpnII.bam -o hiCmatrix/SRX5014530_hic_matrix_dpnII.npz --QCfolder hiCmatrix/SRX5014530_hic_matrix_dpnII_hicQC
+  ## 100kb
+hicBuildMatrix --samFiles mapped_files/SRX5014527_1.sam mapped_files/SRX5014527_2.sam --restrictionSequence GATC --binSize 100000 --threads $NSLOTS --outBam SRX5014527_hic_100kb.bam -o hiCmatrix/SRX5014527_hic_matrix_100kb.npz --QCfolder hiCmatrix/SRX5014527_hic_matrix_100kb_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014528_1.sam mapped_files/SRX5014528_2.sam --restrictionSequence GATC --binSize 100000 --threads $NSLOTS --outBam SRX5014528_hic_100kb.bam -o hiCmatrix/SRX5014528_hic_matrix_100kb.npz --QCfolder hiCmatrix/SRX5014528_hic_matrix_100kb_hicQC 
+hicBuildMatrix --samFiles mapped_files/SRX5014529_1.sam mapped_files/SRX5014529_2.sam --restrictionSequence GATC --binSize 100000 --threads $NSLOTS --outBam SRX5014529_hic_100kb.bam -o hiCmatrix/SRX5014529_hic_matrix_100kb.npz --QCfolder hiCmatrix/SRX5014529_hic_matrix_100kb_hicQC
+hicBuildMatrix --samFiles mapped_files/SRX5014530_1.sam mapped_files/SRX5014530_2.sam --restrictionSequence GATC --binSize 100000 --threads $NSLOTS --outBam SRX5014530_hic_100kb.bam -o hiCmatrix/SRX5014530_hic_matrix_100kb.npz --QCfolder hiCmatrix/SRX5014530_hic_matrix_100kb_hicQC
+
+###Step6:
