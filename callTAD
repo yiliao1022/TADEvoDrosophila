@@ -46,7 +46,31 @@ hicBuildMatrix --samFiles mapped_files/SRX5014528_1.sam mapped_files/SRX5014528_
 hicBuildMatrix --samFiles mapped_files/SRX5014529_1.sam mapped_files/SRX5014529_2.sam --restrictionSequence GATC --binSize 100000 --threads 8 --inputBufferSize 100000 --outBam SRX5014529_hic_100kb.bam -o hiCmatrix/SRX5014529_hic_matrix_100kb.h5 --QCfolder hiCmatrix/SRX5014529_hic_matrix_100kb_hicQC
 hicBuildMatrix --samFiles mapped_files/SRX5014530_1.sam mapped_files/SRX5014530_2.sam --restrictionSequence GATC --binSize 100000 --threads 8 --inputBufferSize 100000 --outBam SRX5014530_hic_100kb.bam -o hiCmatrix/SRX5014530_hic_matrix_100kb.h5 --QCfolder hiCmatrix/SRX5014530_hic_matrix_100kb_hicQC
 
-###Step6:
+###Step6: Merge, diagnose, and correct the Matrices
+
+hicSumMatrices -m hiCmatrix/SRX5014527_hic_matrix_dpnII.h5 hiCmatrix/SRX5014528_hic_matrix_dpnII.h5 -o hiCmatrix/Kc167_hic_matrix_dpnII.h5
+hicSumMatrices -m hiCmatrix/SRX5014527_hic_matrix_10kb.h5 hiCmatrix/SRX5014528_hic_matrix_10kb.h5 -o hiCmatrix/Kc167_hic_matrix_10kb.h5
+hicSumMatrices -m hiCmatrix/SRX5014527_hic_matrix_100kb.h5 hiCmatrix/SRX5014528_hic_matrix_100kb.h5 -o hiCmatrix/Kc167_hic_matrix_100kb.h5
+hicSumMatrices -m hiCmatrix/SRX5014529_hic_matrix_dpnII.h5 hiCmatrix/SRX5014530_hic_matrix_dpnII.h5 -o hiCmatrix/BG3_hic_matrix_dpnII.h5
+hicSumMatrices -m hiCmatrix/SRX5014529_hic_matrix_10kb.h5 hiCmatrix/SRX5014530_hic_matrix_10kb.h5 -o hiCmatrix/BG3_hic_matrix_10kb.h5
+hicSumMatrices -m hiCmatrix/SRX5014529_hic_matrix_100kb.h5 hiCmatrix/SRX5014530_hic_matrix_100kb.h5 -o hiCmatrix/BG3_hic_matrix_100kb.h5
+
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/Kc167_hic_matrix_dpnII.h5 -o plots/Kc167_hic_matrix_dpnII_plot.png
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/BG3_hic_matrix_dpnII.h5 -o plots/BG3_hic_matrix_dpnII_plot.png
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/Kc167_hic_matrix_10kb.h5 -o plots/Kc167_hic_matrix_10kb_plot.png
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/BG3_hic_matrix_10kb.h5 -o plots/BG3_hic_matrix_10kb_plot.png
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/Kc167_hic_matrix_100kb.h5 -o plots/Kc167_hic_matrix_100kb_plot.png
+hicCorrectMatrix diagnostic_plot -m hiCmatrix/BG3_hic_matrix_100kb.h5 -o plots/BG3_hic_matrix_100kb_plot.png
+
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/Kc167_hic_matrix_dpnII.h5 -o hiCmatrix/Kc167_hic_matrix_dpnII_corrected.h5
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/Kc167_hic_matrix_10kb.h5 -o hiCmatrix/Kc167_hic_matrix_10kb_corrected.h5
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/Kc167_hic_matrix_100kb.h5 -o hiCmatrix/Kc167_hic_matrix_100kb_corrected.h5
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/BG3_hic_matrix_dpnII.h5 -o hiCmatrix/BG3_hic_matrix_dpnII_corrected.h5
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/BG3_hic_matrix_10kb.h5 -o hiCmatrix/BG3_hic_matrix_10kb_corrected.h5
+hicCorrectMatrix correct --filterThreshold -1.4 5 -m hiCmatrix/BG3_hic_matrix_100kb.h5 -o hiCmatrix/BG3_hic_matrix_100kb_corrected.h5
+
+### Call TADs
+
 
 
 
