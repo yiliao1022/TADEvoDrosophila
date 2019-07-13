@@ -162,4 +162,5 @@ INPUT6=/data/users/liaoy12/liaoy12/TAD/CallTAD/jucier/Armatus/BG3/4_10k.matrix
 ~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c 2R -i $INPUT2 -g 1.0 -s 0.05 -o 2R_10k
 ~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c 3L -i $INPUT3 -g 1.0 -s 0.05 -o 3L_10k
 ~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c 3R -i $INPUT4 -g 1.0 -s 0.05 -o 3R_10k
-~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c X -i $INPUT5 -g 1.0 -s 0.05 -o X_
+~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c X -i $INPUT5 -g 1.0 -s 0.05 -o X_10k
+~/Softwares/Armatus-latest_ubuntu-12.04/bin/armatus -m -r 10000 -S -c 4 -i $INPUT6 -g 1.0 -s 0.05 -o 4_10k
