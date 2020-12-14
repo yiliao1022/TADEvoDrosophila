@@ -1,6 +1,6 @@
 # Topologically Associating Domains (TADs) in Drosophila species
 
-Topologically associating domains (TADs) are recently identified as functional and physical units of 3D genome organization, which play vital roles in genome function (e.g. gene regulation), strucuture (e.g. chromosomal rearrangements) and evolution. This spacial features were originally discovered in Hi-C contact maps as domains within which DNA sequences physically contact each other more densely than they are outside (Sexton et al. 2012; Dixon et al. 2012). TADs or TAD-like domains have been widely characterized across the kingdom of the life, suggesting they represent a conserved feature of genome organization. 
+Topologically associating domains (TADs) are recently identified as functional and physical units of 3D genome organization, which were thought to play vital roles in genome function (e.g. gene regulation), strucuture (e.g. chromosomal rearrangements) and evolution. This spacial features were originally discovered in Hi-C contact maps as domains within which DNA sequences physically contact each other more densely than they are outside (Sexton et al. 2012; Dixon et al. 2012). TADs or TAD-like domains have been widely characterized across the kingdom of the life, suggesting they represent a conserved feature of genome organization. 
 
 This collection of command-line scrips is to run the methods we used in our work "https://www.biorxiv.org/content/10.1101/2020.05.13.094516v1" for analyses:
 
