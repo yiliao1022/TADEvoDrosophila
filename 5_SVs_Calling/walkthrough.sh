@@ -177,7 +177,54 @@ perl ../../bin/ParseMaf2fastaFinal2.pl --svraw $ID --assemblies genome.lst --sin
 frequency.bed --refseq ISO1.3L
 
 (2) genotyping insertions
+#$ -N temp
+#$ -q jje128
+#$ -m beas
 
+module load bedtools
+SV=All.pop.insertions.sort.sort.bed
+REF=AISO1
+TE=all.TE.out
+
+perl /data/users/liaoy12/liaoy12/TAD/UsingNaoassemblies/SubBins/Get_insertions.pl $SV > $SV\.bed
+
+cat $SV\.bed | grep $REF | grep -E 'Dsim.*Dsec|Dmau.*Dsec|Dsim.*Dmau|Dsec.*Dsim|Dsec.*Dmau|Dmau.*Dsim' | grep 'Dyak\|Dere' > $SV\.bed.bed
+
+awk '{for(i=6;i<=NF;i++){if($i~/^AISO1/){a=$i}} print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"a}' $SV\.bed.bed > $SV\.bed.bed.bed
+
+cat $SV\.bed.bed.bed  |  awk '{print $1"."$2"\t"$3"\t"$4"\t"$5"\t"$6}' > $SV\.bed.bed.bed.bed
+
+bedtools intersect -wa -wb -a $SV\.bed.bed.bed.bed -b $TE -f 0.5 > $SV\.bed.bed.bed.bed.TE
+
+bedtools intersect -wa -wb -a $SV\.bed.bed.bed.bed -b $TE -f 0.5 -v > $SV\.bed.bed.bed.bed.NonTE
+
+sort -u -k1,1 -k2,2n $SV\.bed.bed.bed.bed.TE > $SV\.bed.bed.bed.bed.TE.uniq
+sort -u -k1,1 -k2,2n $SV\.bed.bed.bed.bed.NonTE > $SV\.bed.bed.bed.bed.NonTE.uniq
+
+awk '{for(i=5;i<=NF;i++){if($i~/^AISO1/){a=$i}} print a"\t"$1"\t"$2"\t"$3"\t"$4"\t"$NF}' $SV\.bed.bed.bed.bed.TE.uniq > $SV\.bed.bed.bed.bed.TE.uniq.
+bed
+awk '{for(i=5;i<=NF;i++){if($i~/^AISO1/){a=$i}} print a"\t"$1"\t"$2"\t"$3"\t"$4}' $SV\.bed.bed.bed.bed.NonTE.uniq > $SV\.bed.bed.bed.bed.NonTE.uniq.b
+ed
+
+grep -v 'Low\|Simple\|Sate' $SV\.bed.bed.bed.bed.TE.uniq.bed > $SV\.bed.bed.bed.bed.TE.uniq.bed.bed
+grep 'Low\|Simple\|Sate' $SV\.bed.bed.bed.bed.TE.uniq.bed > Low.Simple.Satellite.bed
+awk '$5<50' $SV\.bed.bed.bed.bed.TE.uniq.bed.bed > 50bpTE.tmp.bed
+
+awk '$5>49' $SV\.bed.bed.bed.bed.TE.uniq.bed.bed > $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed
+
+cat 50bpTE.tmp.bed $SV\.bed.bed.bed.bed.NonTE.uniq.bed Low.Simple.Satellite.bed > $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed
+
+sed -i 's/AISO1_//g' $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed
+sed -i 's/_/\t/g' $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed
+
+sed -i 's/AISO1_//g' $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed
+sed -i 's/_/\t/g' $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed
+
+perl ~/liaoy12/TAD/SV_paper_Final/bin/euchromatin.pl $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed
+perl ~/liaoy12/TAD/SV_paper_Final/bin/euchromatin.pl $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed
+
+cat $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed.euchromatin.bed | sort -k1,1 -k2,2n > $SV\.bed.bed.bed.bed.TE.uniq.bed.bed.bed.euchromatin.bed.sort
+cut -f1-7 $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed.euchromatin.bed | sort -k1,1 -k2,2n > $SV\.bed.bed.bed.bed.NonTE.uniq.bed.bed.euchromatin.bed.sort
 
 
 
